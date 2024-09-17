@@ -24,7 +24,7 @@ jobs:
           # 必須設定 (The following are required settings)
           project_key: ${{secrets.BACKLOG_PROJECT_KEY }}
           api_host: ${{secrets.BACKLOG_FQDN }}
-          api_key: ${{secrets.BACKLOG_API_KEY }}
+          api_key: ${{secrets.BACKLOG_API_KEY_CHECK }}
 
           # 任意設定 (The following are optional settings)
           fix_keywords: |-
