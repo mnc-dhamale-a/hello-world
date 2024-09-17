@@ -1,0 +1,80 @@
+name: Backlog Notify
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - closed
+    branches:
+      - releases/**
+
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Backlog Notify
+        uses: bicstone/backlog-notify@v5
+        with:
+          # 必須設定 (The following are required settings)
+          project_key: ${{secrets.BACKLOG_PROJECT_KEY }}
+          api_host: ${{secrets.BACKLOG_FQDN }}
+          api_key: ${{secrets.BACKLOG_API_KEY }}
+
+          # 任意設定 (The following are optional settings)
+          fix_keywords: |-
+            #fix
+            #fixes
+            #fixed
+          close_keywords: |-
+            #close
+            #closes
+            #closed
+          push_comment_template: |-
+            <%= commits[0].author.name %>さんが[<%= ref.name %>](<%= ref.url %>)にプッシュしました
+            <% commits.forEach(commit=>{ %>
+            + [<%= commit.comment %>](<%= commit.url %>) (<% print(commit.id.slice(0, 7)) %>)<% }); %>
+          pr_opened_comment_template: |-
+            <%= sender.login %>さんがプルリクエストを作成しました
+
+            + [<%= title %>](<%= pr.html_url %>) (#<%= pr.number %>)
+          pr_reopened_comment_template: |-
+            <%= sender.login %>さんがプルリクエストを作成しました
+
+            + [<%= title %>](<%= pr.html_url %>) (#<%= pr.number %>)
+          pr_ready_for_review_comment_template: |-
+            <%= sender.login %>さんがプルリクエストを作成しました
+
+            + [<%= title %>](<%= pr.html_url %>) (#<%= pr.number %>)
+          pr_closed_comment_template: |-
+            <%= sender.login %>さんがプルリクエストをクローズしました
+
+            + [<%= title %>](<%= pr.html_url %>) (#<%= pr.number %>)
+          pr_merged_comment_template: |-
+            <%= sender.login %>さんがプルリクエストをマージしました
+
+            + [<%= title %>](<%= pr.html_url %>) (#<%= pr.number %>)
+          commit_message_reg_template: "\
+            ^\
+            (<%= projectKey %>\\-\\d+)\\s?\
+            (.*?)?\\s?\
+            (<% print(fixKeywords.join('|')) %>|<% print(closeKeywords.join('|')) %>)?\
+            $\
+            "
+          pr_title_reg_template: "\
+            ^\
+            (<%= projectKey %>\\-\\d+)\\s?\
+            (.*?)?\\s?\
+            (<% print(fixKeywords.join('|')) %>|<% print(closeKeywords.join('|')) %>)?\
+            $\
+            "
+          fix_status_id: 3
+          close_status_id: 4
+   
+
+      
