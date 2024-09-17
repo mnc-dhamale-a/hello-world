@@ -11,6 +11,7 @@ on:
       - ready_for_review
       - closed
     branches:
+      - main
       - releases/**
 
 
